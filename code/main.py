@@ -1,13 +1,16 @@
 # author: Bret Mathyer
+# lang: EN
+# for: discord bot
 
 #imports
 import discord
 import os
 import requests
 import random
+import string
+
 
 #main
-
 client = discord.Client()
 categories = ['jack', 'game', 'currency', 'autoreply']
 command_list = {
@@ -17,10 +20,12 @@ command_list = {
 	'autoreply': []
 }
 
+
 @client.event
 async def on_ready():
   print('Logged in as {bot.user}'.format(client))
 
+	
 # commands
 @client.event
 async def on_message(message):
@@ -62,17 +67,20 @@ async def on_message(message):
 		
 		# flipping a coin
 		if index[1] == 'flip':
-			coin = random.randint(1, 2)
+			coin = random.randint(0, 2)
 			if coin == 1:
 					msgsend('The coin landed on Heads')
 			else:
 					msgsend('The coin landed on Tails')
 		
-		# solve a simple math problem
+		# solve a simple math problem, maintains system health
 		if index[1] == 'math':
 			equation = index[2]
-			answer = (float)equation
-			msgsend("The answer is: " + answer)
+			if not set(equation).intersection(string.ascii_letters + '{}[]_;\n'):
+				msgsend("The answer is: ", eval(equation))
+			else:
+				msgsend("illegal character(s)")
+				return None
 	
 	# autoreply
 	if any(words in msg for words in autoreply_list):
